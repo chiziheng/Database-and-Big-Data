@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Page</title>
+    <script src="vue.js"></script>
+    <script src="xe-utils.js"></script>
+    <script src="vxe-table.js"></script>
+    <script src="axios.min.js"></script>
+    <link href="main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="header">
+        <input
+          v-model="search_text"
+          placeholder=""
+          v-on:keyup.enter="search_book"
+        />
+        <button v-on:click="search_book">Search a book</button>
+        <button v-on:click="addBook">Add a book</button>
+        <span class="search_info"></span>
+        <span class="result_conut"></span>
+        <button v-show="showNextPage" v-on:click="loadNextPage">
+          Next Page
+        </button>
+      </div>
+      <template>
+        <div>
+          <vxe-table
+            empty-text="No result."
+            border
+            highlight-hover-row
+            :data="tableData"
+            @cell-click="viewDetails"
+            highlight-hover-row
+            highlight-current-row
+            highlight-hover-column
+            highlight-current-column
+          >
+            <vxe-table-column type="seq" width="60"></vxe-table-column>
+            <vxe-table-column field="title" title="title" sortable>
+              <template v-slot="{ row }">
+                <div v-if="row.asin" :asin="row.asin">
+                  {{decodeHtml(row.title)}}
+                </div></template
+              >
+            </vxe-table-column>
+            <vxe-table-column field="imUrl" title="image" width="200">
+              <template v-slot="{ row }">
+                <img
+                  v-if="row.imUrl&&row.imUrl.toString().indexOf('http')!=-1"
+                  :src="row.imUrl"
+                  style="max-width: 182px; max-height: 190px" /></template
+            ></vxe-table-column>
+            <vxe-table-column field="categories" title="category" sortable>
+              <template v-slot="{ row }">
+                <ul>
+                  <li v-for="item in row.categories">
+                    <span v-for="i in item.slice(0,item.length-1)">{{i}}></span>
+                    <span v-for="i in item.slice(item.length-1,item.length)"
+                      >{{i}}</span
+                    >
+                  </li>
+                </ul>
+              </template></vxe-table-column
+            >
+            <vxe-table-column field="description" title="Description" sortable
+              ><template v-slot="{ row }">
+                <div>{{decodeHtml(row.description)}}</div>
+              </template>
+            </vxe-table-column>
+            <vxe-table-column
+              field="price"
+              title="Price in $"
+              sortable
+              width="120"
+            ></vxe-table-column>
+          </vxe-table>
+
+          <vxe-modal
+            class="viewDetail"
+            v-model="showDetails"
+            title="View details"
+            width="600"
+            height="400"
+            :mask="false"
+            :lock-view="false"
+            resize
+          >
+            <template v-slot>
+              <vxe-table
+                border="inner"
+                auto-resize
+                show-overflow
+                highlight-hover-row
+                height="auto"
+                :show-header="false"
+                :sync-resize="showDetails"
+                :data="detailData"
+              >
+                <vxe-table-column field="label" width="25%"></vxe-table-column>
+                <vxe-table-column field="value">
+                  <template v-slot="{ row }">
+                    <span
+                      v-if='row.value&&row.value.toString().indexOf("http")!=-1'
+                    >
+                      <img
+                        :src="row.value"
+                        style="max-width: 182px; max-height: 190px"
+                      />
+                    </span>
+                    <span v-else-if='row.label=="Reviews"'
+                      >{{decodeHtml(row.value)}} <button class='sortreview' v-on:click="sortReview">Sort by time</button></span
+                    >
+                    <span v-else>{{decodeHtml(row.value)}}</span>
+                  </template>
+                </vxe-table-column>
+              </vxe-table>
+              <input class="reviewContent" />
+              <button v-on:click="addReview">Add a review</button>
+            </template>
+          </vxe-modal>
+          <vxe-modal
+            v-model="showAddBook"
+            title="Add a book"
+            width="600"
+            height="400"
+            :mask="false"
+            :lock-view="false"
+            resize
+          >
+            <template v-slot>
+              <vxe-table
+                class="addBookPage"
+                border="inner"
+                show-overflow
+                highlight-hover-row
+                height="200"
+                :show-header="false"
+                :sync-resize="showAddBook"
+                :data="bookData"
+                :edit-config="{trigger: 'click', mode: 'row'}"
+              >
+                <vxe-table-column field="label" width="25%"></vxe-table-column>
+                <vxe-table-column
+                  field="value"
+                  :edit-render="{name: 'input', attrs: {type: 'text'}}"
+                ></vxe-table-column>
+              </vxe-table>
+              <vxe-button
+                status="primary"
+                class="addBookButton"
+                v-on:click="getAddBook"
+                >Submit</vxe-button
+              >
+            </template>
+          </vxe-modal>
+        </div>
+      </template>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

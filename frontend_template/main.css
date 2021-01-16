@@ -1,0 +1,39 @@
+@import url("style.css");
+
+.addBookButton {
+  left: 230px;
+}
+
+.vxe-cell {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+ul {
+  padding-left: 6px;
+}
+
+.viewDetail tr:nth-child(3) td {
+  max-height: 200px !important;
+}
+
+.viewDetail tr:nth-child(3) td div {
+  max-height: fit-content !important;
+}
+
+.viewDetail *::-webkit-scrollbar {
+  display: none;
+}
+
+.header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0px;
+  z-index: 10;
+  background-color: white;
+}
+
+.sortreview {
+  float: right;
+}
