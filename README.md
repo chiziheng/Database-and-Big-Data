@@ -1,4 +1,4 @@
-<h1>50.043 DataBase And Big Data Systems group project</h1>
+<h1>50.043 DataBase And Big Data Systems project</h1>
 
 2020 Term6 *Group 15*
 
